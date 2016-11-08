@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+  <body>
+    <ul>
+       <% Object.keys(urls).forEach(function(key) { %>
+        <li><a href="<%= urls[key] %>"><%= key %></a></li>
+      <% }); %>
+    </ul>
+
+  </body>
+</html>
