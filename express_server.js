@@ -2,11 +2,10 @@ var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
 
-const bodyParser = require("body-paser");
+const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.set("view engine", "ejs");
-
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -15,6 +14,15 @@ var urlDatabase = {
 
 app.get("/", (req, res) => {
   res.end("Hello!");
+});
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);
+  res.send("Ok");
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -38,3 +46,18 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+function generateRandomString() {
+
+  var list = "abcdefghijklmnopqrstuvwxyz0123456789";
+  var newPass = "";
+
+  for (var i = 0; i < 6; i++) {
+    newPass += list.charAt(Math.floor(Math.random() * list.length));
+  }
+console.log("New passcode: " + newPass);
+}
+
+
+
+
