@@ -20,11 +20,11 @@ app.get("/", (req, res) => {
 
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString(); //generates random string
-  var longURL = req.body.longURL; //sets to req.body.longURL
+  var longURL = req.body.longURL; //sets key-values pairs from bodyparse
+  urlDatabase[shortURL] = longURL; //sets longURL to urlDatabase[shortURL]
+  res.redirect(`/urls/${shortURL}`); //redirects
   // grab the long url from the form data
   // add it to the urlDatabase
-  urlDatabase[shortURL] = longURL;
-  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
