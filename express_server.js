@@ -23,13 +23,15 @@ app.post("/urls", (req, res) => {
   var longURL = req.body.longURL; //sets key-values pairs from bodyparse
   urlDatabase[shortURL] = longURL; //sets longURL to urlDatabase[shortURL]
   res.redirect(`/urls/${shortURL}`); //redirects
-  // grab the long url from the form data
-  // add it to the urlDatabase
 });
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
+
+app.post("/urls/:id/delete", (req, res) => {
+  res.redirect('/urls');
+})
 
 app.post("/urls", (req, res) => {
   console.log(req.body);
