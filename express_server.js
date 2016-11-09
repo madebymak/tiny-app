@@ -7,13 +7,24 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 app.set("view engine", "ejs");
 
+
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "9sm5xK": "http://www.google.com",
+
 };
 
 app.get("/", (req, res) => {
   res.end("Hello!");
+});
+
+app.post("/urls", (req, res) => {
+  var shortURL = generateRandomString(); //generates random string
+  var longURL = req.body.longURL; //sets to req.body.longURL
+  // grab the long url from the form data
+  // add it to the urlDatabase
+  urlDatabase[shortURL] = longURL;
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -50,12 +61,12 @@ app.listen(PORT, () => {
 function generateRandomString() {
 
   var list = "abcdefghijklmnopqrstuvwxyz0123456789";
-  var newPass = "";
+  var newURL = "";
 
   for (var i = 0; i < 6; i++) {
-    newPass += list.charAt(Math.floor(Math.random() * list.length));
+    newURL += list.charAt(Math.floor(Math.random() * list.length));
   }
-console.log("New passcode: " + newPass);
+  return newURL;
 }
 
 
