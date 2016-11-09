@@ -10,12 +10,14 @@
        <% Object.keys(urls).forEach(function(key) { %>
         <li><a href="<%= urls[key] %>"><%= key %></a> --->
         <%= urls[key] %>
-        <form method="POST" action="/urls/9sm5xK/delete">
+        <a href="/urls/<%= key %>">Edit</a>
+
+        <form method="POST" action="/urls/<%= key %>/delete">
         <input type="Submit" name="Delete" value="Delete"></form>
 
          <br></br></li>
       <% }); %>
     </ul>
-    <a href ="">Click here to shorten your links</a>
+    <a href ="http://localhost:8080/urls/new">Click here to shorten your links</a>
   </body>
 </html>
