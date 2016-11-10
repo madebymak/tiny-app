@@ -17,11 +17,6 @@ var urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-  // if(req.cookies["username"]) {
-  //   res.redirect('/urls');
-  // } else {
-  //   res.redirect('/login');
-  // }
   res.redirect("/urls")
 });
 
@@ -39,6 +34,11 @@ app.post("/urls", (req, res) => {
 app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
   res.redirect('/urls');
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/");
 });
 
 app.get("/urls/new", (req, res) => {
