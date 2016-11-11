@@ -16,6 +16,8 @@ var urlDatabase = {
 
 };
 
+let emptyObj = {};
+
 app.get("/", (req, res) => {
   res.redirect("/urls")
 });
@@ -43,10 +45,38 @@ app.post("/logout", (req, res) => {
 });
 
 //user registration
+
+app.post("/register", (req, res) => {
+  let userRandomID = generateRandomString();
+  let user = {id: userRandomID,  email: req.body.email, password: req.body.password};
+  emptyObj[userRandomID] = user;
+  console.log(emptyObj);
+
+  if (!user["email"] || !user["password"]) {
+    //console.log("Problem");
+    res.status(400).send("Please enter email and password.");
+    return;
+  }
+    Object.keys(emptyObj).forEach((userId) => {
+   if (emptyObj[userId].email === req.body.email) {
+     res.status(400).send("Email not available.");
+     return;
+     //console.log("Not available.", res.statusCode);
+   }
+})
+    res.cookie("key", userRandomID);
+     res.redirect("/urls");
+
+})
+
 app.get("/register", (req, res) => {
-  let templateVars = {email: req.cookies["email"]};
-  res.render("urls_register", templateVars);
+  res.render("urls_register");
 });
+
+// app.get("/register", (req, res) => {
+//   let templateVars = {user_id: req.cookies["id"]};
+//   res.render("urls_register", templateVars);
+// });
 
 ////////////////////////////////////////
 
