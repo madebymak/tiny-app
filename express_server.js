@@ -8,6 +8,12 @@ const cookieParser = require('cookie-parser');
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(cookieParser())
 
+// app.use(function (req, res, next) {
+//   let idUserCookie = req.cookies["user_id"];
+//   req.currentUser = users[idUserCookie];
+//   next();
+// })
+
 app.set("view engine", "ejs");
 
 var urlDatabase = {
@@ -16,9 +22,14 @@ var urlDatabase = {
 
 };
 
-let emptyObj = {};
+let usersObj = { "jacky":
+{id: "jacky",
+email: "test@test.com",
+password: "test1234"}
+};
 
 app.get("/", (req, res) => {
+
   res.redirect("/urls")
 });
 
@@ -29,13 +40,15 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`); //redirects
 });
 
-// app.get("/login", (req, res) => {
-//   res.send("login");
-// });
+//login
+app.get("/login", (req, res) => {
+  //res.send("login");
+  res.render("/urls_login")
+});
 
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  res.cookie("id", req.body.username);
   res.redirect('/urls');
 });
 
@@ -43,29 +56,32 @@ app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/");
 });
+///////////////////////
 
 //user registration
 
 app.post("/register", (req, res) => {
   let userRandomID = generateRandomString();
-  let user = {id: userRandomID,  email: req.body.email, password: req.body.password};
-  emptyObj[userRandomID] = user;
-  console.log(emptyObj);
+  let user = {id: userRandomID, email: req.body.email, password: req.body.password};
 
   if (!user["email"] || !user["password"]) {
-    //console.log("Problem");
-    res.status(400).send("Please enter email and password.");
+    res.status(400).send("Please enter a email and password.");
     return;
   }
-    Object.keys(emptyObj).forEach((userId) => {
-   if (emptyObj[userId].email === req.body.email) {
-     res.status(400).send("Email not available.");
-     return;
-     //console.log("Not available.", res.statusCode);
-   }
-})
-    res.cookie("key", userRandomID);
-     res.redirect("/urls");
+
+  for(var userId in usersObj) {
+    //console.log("Input:", req.body.email);
+    //console.log("Check:", usersObj[userId].email)
+    if (usersObj[userId].email === req.body.email) {
+      res.status(400).send("Email not available.");
+      return;
+    }
+  };
+
+  usersObj[userRandomID] = user;
+  //console.log("User list:", usersObj);
+  res.cookie("key", userRandomID);
+  res.redirect("/urls");
 
 })
 
@@ -73,10 +89,6 @@ app.get("/register", (req, res) => {
   res.render("urls_register");
 });
 
-// app.get("/register", (req, res) => {
-//   let templateVars = {user_id: req.cookies["id"]};
-//   res.render("urls_register", templateVars);
-// });
 
 ////////////////////////////////////////
 
@@ -100,8 +112,9 @@ app.post("/urls/:id", (req, res) => {
   res.redirect('/urls');
 });
 
+////made changes
 app.get("/urls", (req, res) => {
-  let templateVars = {username: req.cookies["username"],
+  let templateVars = {email: req.cookies["email"],
 urls: urlDatabase};
   res.render("urls_index", templateVars);
 });
