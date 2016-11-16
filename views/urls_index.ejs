@@ -6,6 +6,12 @@
 
 </head>
   <body>
+      <% if (email) { %>
+    <form action="/urls/new" method="GET">
+      <input type="submit" value="Create">
+    </form>
+    <% } %>
+  </div>
     <ul>
        <% Object.keys(urls).forEach(function(key) { %>
         <li><a href="<%= urls[key] %>"><%= key %></a> --->
@@ -19,5 +25,6 @@
       <% }); %>
     </ul>
     <a href ="http://localhost:8080/urls/new">Click here to shorten your links</a>
+
   </body>
 </html>
