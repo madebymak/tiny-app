@@ -3,10 +3,22 @@ var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
 
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session')
 
 app.use(bodyParser.urlencoded({extended: true}))
-app.use(cookieParser())
+// app.use(cookieParser())
+
+app.use(cookieSession({
+  name: 'session',
+  keys: ["secretKey1", "secretKey2" ],
+}))
+
+app.use(function (req, res, next) {
+  req.loggedIn = !!req.session.userId;
+  res.locals.currentUser = userDatabase[req.session.userId];
+  next();
+})
 
 app.set("view engine", "ejs");
 
@@ -32,13 +44,20 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.redirect("/urls")
+  if (req.loggedIn) {
+    res.redirect("/urls");
+  } else {
+  res.redirect("/login");
+  }
 });
 
 //login////////////////////
 app.get("/login", (req, res) => {
-  //res.send("login");
-  res.render("/login")
+  if (req.loggedIn) {
+    res.redirect("/");
+  } else {
+  res.render("/login");
+  }
 });
 
 //made changes
@@ -51,7 +70,8 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("email");
+  // res.clearCookie("email");
+  req.session.user.email = null;
   res.redirect("/");
 });
 ///////////////////////
@@ -80,7 +100,8 @@ app.post("/register", (req, res) => {
 
   usersObj[userRandomID] = user;
   //console.log("User list:", usersObj);
-  res.cookie("key", userRandomID);
+  // res.cookie("key", userRandomID);
+  res.cookieSession("key", userRandomID);
   res.redirect("/urls");
 
 })
@@ -97,7 +118,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  let email = req.cookie.usersObj["email"];
+  let email = req.cookieSession.usersObj["email"];
   var shortURL = generateRandomString(); //generates random string
   var longURL = req.body.longURL; //sets key-values pairs from bodyparse
   urlDatabase[shortURL] = longURL; //sets longURL to urlDatabase[shortURL]
