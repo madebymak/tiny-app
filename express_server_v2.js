@@ -3,6 +3,11 @@ const app = express();
 const PORT = process.env.PORT || 8080
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
+const bcrypt = require("bcrypt")
+
+const saltRounds = 10;
+const myPlaintextPassword = 's0/\/\P4$$w0rD';
+const someOtherPlaintextPassword = 'not_bacon';
 
 //Database/////
 const databaseURLs = {
@@ -13,6 +18,7 @@ const databaseURLs = {
 const databaseUsers = {
   "jacky": {
     id: "jacky",
+    userId: "jacky",
     email: "test@test.com",
     password: "test1234",
   }
@@ -26,13 +32,33 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-app.use(function (req, res, next){
+app.use(cookieSession({
+  name: "session",
+  keys: ["secretKey"]
+}));
+
+app.use(function (req, res, next) {
   //TODO
   next();
 });
 
-//Routes//////////
 
+//Functions///////
+
+function generateRandomString() {
+  let list = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let newURL = "";
+
+  for (var i = 0; i < 6; i++) {
+    newURL += list.charAt(Math.floor(Math.random() * list.length));
+  }
+  return newURL;
+}
+
+//////////////////
+
+
+//Routes//////////
 app.get("/", function (req, res) {
   // res.send("test");
   res.redirect("/urls")
@@ -101,22 +127,6 @@ app.post("/logout", function (req, res) {
 });
 
 /////////////////
-
-
-
-//Functions///////
-
-function generateRandomString() {
-  let list = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let newURL = "";
-
-  for (var i = 0; i < 6; i++) {
-    newURL += list.charAt(Math.floor(Math.random() * list.length));
-  }
-  return newURL;
-}
-
-//////////////////
 
 
 
