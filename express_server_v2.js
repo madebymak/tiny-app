@@ -20,59 +20,83 @@ const databaseUsers = {
 
 ////////////////
 
-app.set("view engine", "ejs");
+app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+app.use(function (req, res, next){
+  //TODO
+  next();
+});
+
 //Routes//////////
 
-app.get('/', function (req, res) {
-  res.redirect("/login")
+app.get("/", function (req, res) {
+  // res.send("test");
+  res.redirect("/urls")
 });
 
-app.get('/urls', function (req, res) {
+app.get("/urls", function (req, res) {
+  // res.send("Main page");
+  res.render("urls_index")
+});
+
+app.post("/urls", function (req, res) {
+
+});
+
+app.get("/urls/new", function (req, res) {
+  // TODO
+});
+
+app.get("/urls/:id", function (req, res) {
+  // TODO
+});
+
+app.get("/u/:id", function (req, res) {
   //TODO
 });
 
-app.get('/urls/new', function (req, res) {
+app.post("/urls/:id", function (req, res) {
   // TODO
 });
 
-app.get('/urls/:id', function (req, res) {
-  // TODO
+app.get("/login", function (req, res) {
+  // res.send("Login");
 });
 
-app.get('/u/:id', function (req, res) {
+app.get("/register", function (req, res) {
+  res.render("urls_register");
+});
+
+app.post("/register", function (req, res) {
+  let userRandomId = generateRandomString();
+  let user = {id: userRandomId, email: req.body.email, password: req.body.password};
+
+  if (!user["email"] || !user["password"]) {
+    res.status(400).send("Please enter a email and password.");
+    return;
+  }
+
+  for(var userId in databaseUsers) {
+    if (databaseUsers[userId].email === req.body.email) {
+      res.status(400).send("Email not available.");
+      return;
+    }
+  };
+
+  databaseUsers[userRandomId] = user;
+
+  res.redirect("/urls")
+});
+
+app.post("/login", function (req, res) {
   //TODO
 });
 
-app.post('/urls', function (req, res) {
-  // TODO
-});
-
-app.post('/urls/:id', function (req, res) {
-  // TODO
-});
-
-app.get('/login', function (req, res) {
-  res.send("Login")
-});
-
-app.get('/register', function (req, res) {
-  // TODO
-});
-
-app.post('/register', function (req, res) {
-  // TODO
-});
-
-app.post('/login', function (req, res) {
-  //TODO
-});
-
-app.post('/logout', function (req, res) {
+app.post("/logout", function (req, res) {
   //TODO
 });
 
