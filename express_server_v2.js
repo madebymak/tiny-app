@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080
-// const cookieSession = require("cookie-session");
+const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
 // const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
@@ -35,11 +35,11 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(cookieParser());
-
-// app.use(cookieSession({
-//   name: "session",
-//   keys: ["key1", "key2"]
-// }));
+app.set("trust proxy", 1);
+app.use(cookieSession({
+  name: "session",
+  keys: ["key1", "key2"]
+}));
 
 //checks for logged in user
 // app.use(function (req, res, next) {
@@ -77,7 +77,7 @@ app.get("/urls", function (req, res) {
 
   // res.send("Main page");
   // let email = req.session.email;
-  let templateVars = {username: req.cookies["username"],
+  let templateVars = {email: req.cookies["email"],
     urls: databaseURLs};
     // console.log("temp:",templateVars);
   res.render("urls_index", templateVars)
@@ -113,7 +113,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/login", function (req, res) {
-  // res.send("Login");
+  res.render("urls_login")
 });
 
 app.get("/register", function (req, res) {
@@ -121,38 +121,91 @@ app.get("/register", function (req, res) {
 });
 
 app.post("/register", function (req, res) {
-  let userRandomId = generateRandomString();
-  let user = {
-    id: userRandomId,
-    email: req.body.email,
-    password: req.body.password
-  };
 
-  if (!user["email"] || !user["password"]) {
+  var unavailableEmail;
+
+   Object.keys(users).forEach((userId) => {
+     if (users[userId].email === req.body.email) {
+       console.log(users[userId].email);
+       unavailableEmail = users[userId].email;
+     }
+   });
+
+
+  if (!req.body.email || !req.body.password) {
     res.status(400).send("Please enter a email and password.");
     return;
   }
 
   for(var userId in users) {
-    if (users[userId].email === req.body.email) {
+    if (unavailableEmail === req.body.email) {
       res.status(400).send("Email not available.");
       return;
     }
   };
 
-  users[userRandomId] = user;
-  // console.log("user:",user);
-  // console.log(users);
-  res.redirect("/")
+   let enteredEmail = req.body.email;
+   let enteredPassword = req.body.password;
+
+  let randomUserId = generateRandomString();
+  console.log(users);
+
+  // bcrypt.hash(enteredPassword, saltRounds, (err, hash) => {
+    const newUser = { email: enteredEmail, password: enteredPassword }; //hash
+    // console.log(hash);
+    console.log(newUser);
+    users[randomUserId] = newUser;
+    console.log(users);
+    // });
+
+  res.redirect("/urls");
 });
 
 app.post("/login", function (req, res) {
-  res.cookie("username", req.body.username);
-  res.redirect('/urls');
-});
+  const emailInput = req.body.email;
+  const passwordInput = req.body.password;
+
+  console.log("email in:", emailInput)
+
+  console.log("pass in:", passwordInput);
+
+  var emailMatch;
+  var passwordMatch;
+
+  Object.keys(users).forEach((userId) => {
+      console.log("users:", users[userId].email);
+      console.log("usersdb pass:",users[userId].password);
+
+     if (users[userId].email === emailInput) {
+       emailMatch = users[userId].email;
+       passwordMatch = users[userId].password;
+
+     }
+   });
+
+   if (emailInput === emailMatch) {
+     console.log("email found in the db");
+   }
+     // bcrypt.compare(passwordInput, passwordMatch, (err, pass) => {
+  if (passwordInput === passwordMatch) {
+      console.log("password matches, good to go");
+      req.session.email = req.body.email;
+      res.redirect("/urls");
+      return;
+    } else {
+       console.log("wrong password");
+       // res.send(nvalid email or password");
+       res.status(403).send("Invalid email or password");
+       return;
+     }
+   // });
+     console.log("email not found");
+     res.status(403).send("Invalid email or password");
+     return;
+})
 
 app.post("/logout", function (req, res) {
-  res.clearCookie("username");
+  req.session.email = undefined;
   res.redirect("/urls");
 });
 
