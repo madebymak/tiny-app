@@ -94,15 +94,14 @@ app.get("/urls/new", function (req, res) {
 });
 
 app.get("/urls/:id", function (req, res) {
-  // TODO
-});
-
-app.get("/u/:id", function (req, res) {
-  //TODO
+  let templateVars = { email: req.body["email"], shortURL: req.params.id, longURL: databaseURLs[req.params.id]};
+  // console.log("id:", templateVars)
+  res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", function (req, res) {
-  // TODO
+  databaseURLs[req.params.id] = req.body.newURL;
+  res.redirect('/urls');
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -139,8 +138,8 @@ app.post("/register", function (req, res) {
   };
 
   users[userRandomId] = user;
-  console.log("user:",user);
-  console.log(users);
+  // console.log("user:",user);
+  // console.log(users);
   res.redirect("/")
 });
 
