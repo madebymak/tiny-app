@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080
-const cookieSession = require("cookie-session");
+// const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 
 const saltRounds = 10;
@@ -36,10 +36,10 @@ app.use(bodyParser.urlencoded({
 
 app.use(cookieParser());
 
-app.use(cookieSession({
-  name: "session",
-  keys: ["key1", "key2"]
-}));
+// app.use(cookieSession({
+//   name: "session",
+//   keys: ["key1", "key2"]
+// }));
 
 //checks for logged in user
 // app.use(function (req, res, next) {
@@ -69,16 +69,17 @@ function generateRandomString() {
 //Routes//////////
 app.get("/", function (req, res) {
   // res.send("test");
+  console.log('Cookies: ', req.cookies)
   res.redirect("/urls")
 });
 
 app.get("/urls", function (req, res) {
 
   // res.send("Main page");
-  let email = req.session.email;
-  let templateVars = {email: req.body.email,
+  // let email = req.session.email;
+  let templateVars = {username: req.cookies["username"],
     urls: databaseURLs};
-    console.log("temp:",templateVars);
+    // console.log("temp:",templateVars);
   res.render("urls_index", templateVars)
 });
 
@@ -90,6 +91,8 @@ app.post("/urls", function (req, res) {
 });
 
 app.get("/urls/new", function (req, res) {
+  let templateVars = { username: req.cookies["username"]};
+  res.render("urls_new", templateVars);
   res.render("urls_new");
 });
 
@@ -144,11 +147,13 @@ app.post("/register", function (req, res) {
 });
 
 app.post("/login", function (req, res) {
-  //TODO
+  res.cookie("username", req.body.username);
+  res.redirect('/urls');
 });
 
 app.post("/logout", function (req, res) {
-  //TODO
+  res.clearCookie("username");
+  res.redirect("/urls");
 });
 
 /////////////////
