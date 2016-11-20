@@ -100,13 +100,13 @@ app.get("/urls/new", function (req, res) {
 });
 
 app.get("/urls/:id", function (req, res) {
-  let templateVars = { email: req.body["email"], shortURL: req.params.id, longURL: databaseURLs[req.params.id]};
+  let templateVars = { email: req.session["email"], shortURL: req.params.id, longURL: databaseURLs[req.params.id]};
   // console.log("id:", templateVars)
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", function (req, res) {
-  databaseURLs[req.params.id] = req.body.newURL;
+  databaseURLs[req.params.id].newURL = req.body.newURL;
   res.redirect('/urls');
 });
 
