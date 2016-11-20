@@ -68,16 +68,19 @@ function generateRandomString() {
 
 //Routes//////////
 app.get("/", function (req, res) {
+  let templateVars = {email: req.session.email,
+    urls: databaseURLs};
+  res.render("urls_index", templateVars);
   // res.send("test");
-  console.log('Cookies: ', req.cookies)
-  res.redirect("/urls")
+  // console.log('Cookies: ', req.cookies)
+  // res.redirect("/urls")
 });
 
 app.get("/urls", function (req, res) {
 
   // res.send("Main page");
   // let email = req.session.email;
-  let templateVars = {email: req.cookies["email"],
+  let templateVars = {email: req.session["email"],
     urls: databaseURLs};
     // console.log("temp:",templateVars);
   res.render("urls_index", templateVars)
@@ -91,9 +94,9 @@ app.post("/urls", function (req, res) {
 });
 
 app.get("/urls/new", function (req, res) {
-  let templateVars = { username: req.cookies["username"]};
+  let templateVars = { email: req.session["email"]};
   res.render("urls_new", templateVars);
-  res.render("urls_new");
+  // res.render("urls_new");
 });
 
 app.get("/urls/:id", function (req, res) {
@@ -148,7 +151,7 @@ app.post("/register", function (req, res) {
    let enteredPassword = req.body.password;
 
   let randomUserId = generateRandomString();
-  console.log(users);
+  // console.log(users);
 
   // bcrypt.hash(enteredPassword, saltRounds, (err, hash) => {
     const newUser = { email: enteredEmail, password: enteredPassword }; //hash
@@ -206,7 +209,7 @@ app.post("/login", function (req, res) {
 
 app.post("/logout", function (req, res) {
   req.session.email = undefined;
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 /////////////////
