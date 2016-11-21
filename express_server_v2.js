@@ -68,8 +68,10 @@ function generateRandomString() {
 
 //Routes//////////
 app.get("/", function (req, res) {
-  let templateVars = {email: req.session.email,
-    urls: databaseURLs};
+  let templateVars = {
+    email: req.session.email,
+    urls: databaseURLs
+  };
   res.render("urls_index", templateVars);
   // res.send("test");
   // console.log('Cookies: ', req.cookies)
@@ -77,11 +79,11 @@ app.get("/", function (req, res) {
 });
 
 app.get("/urls", function (req, res) {
-
-  // res.send("Main page");
-  // let email = req.session.email;
-  let templateVars = {email: req.session["email"],
-    urls: databaseURLs};
+  let email = req.session.email;
+  let templateVars = {
+    email: req.session["email"],
+    urls: databaseURLs
+  };
     // console.log("temp:",templateVars);
   res.render("urls_index", templateVars)
 });
@@ -94,19 +96,27 @@ app.post("/urls", function (req, res) {
 });
 
 app.get("/urls/new", function (req, res) {
-  let templateVars = { email: req.session["email"]};
+  let templateVars = {
+    email: req.session["email"]
+  };
   res.render("urls_new", templateVars);
   // res.render("urls_new");
 });
 
 app.get("/urls/:id", function (req, res) {
-  let templateVars = { email: req.session["email"], shortURL: req.params.id, longURL: databaseURLs[req.params.id]};
+  let templateVars = {
+    email: req.session["email"],
+    shortURL: req.params.id,
+    longURL: databaseURLs[req.params.id]
+  };
   // console.log("id:", templateVars)
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", function (req, res) {
-  databaseURLs[req.params.id].newURL = req.body.newURL;
+  databaseURLs[req.params.id] = req.body.newURL;
+  // console.log("new url:", databaseURLs[req.params.id]);
+  // console.log("req body url:", req.body.newURL);
   res.redirect('/urls');
 });
 
@@ -154,7 +164,10 @@ app.post("/register", function (req, res) {
   // console.log(users);
 
   // bcrypt.hash(enteredPassword, saltRounds, (err, hash) => {
-    const newUser = { email: enteredEmail, password: enteredPassword }; //hash
+    const newUser = {
+      email: enteredEmail,
+      password: enteredPassword //hash
+    };
     // console.log(hash);
     console.log(newUser);
     users[randomUserId] = newUser;
@@ -209,11 +222,10 @@ app.post("/login", function (req, res) {
 
 app.post("/logout", function (req, res) {
   req.session.email = undefined;
-  res.redirect("/login");
+  res.redirect("urls_index");
 });
 
 /////////////////
 
-
-
 app.listen(8080)
+
