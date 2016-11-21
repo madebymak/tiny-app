@@ -13,14 +13,18 @@ const someOtherPlaintextPassword = 'not_bacon';
 //Database/////
 
 const databaseURLs = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  "b2xVn2": {
+    user: "test@test.com",
+    longURL: "http://www.lighthouselabs.ca"
+  },
+  "9sm5xK": {
+    user: "test@test.com",
+    longURL: "http://www.google.com"
+  },
 };
 
 const users = {
   "jacky": {
-    id: "jacky",
-    userId: "jacky",
     email: "test@test.com",
     password: "test1234",
   }
@@ -79,7 +83,7 @@ app.get("/", function (req, res) {
 });
 
 app.get("/urls", function (req, res) {
-  let email = req.session.email;
+  // let email = req.session.email;
   let templateVars = {
     email: req.session["email"],
     urls: databaseURLs
@@ -89,9 +93,15 @@ app.get("/urls", function (req, res) {
 });
 
 app.post("/urls", function (req, res) {
+  var email = req.session.email;
+  // console.log("email:", email);
   var shortURL = generateRandomString();
-  var longURL = req.body.longURL;
-  databaseURLs[shortURL] = longURL;
+  // var longURL = req.body.longURL;
+  databaseURLs[shortURL] = {
+    user: email,
+    longURL: req.body.longURL
+  };
+  console.log("data", databaseURLs);
   res.redirect("/urls");
 });
 
@@ -106,15 +116,18 @@ app.get("/urls/new", function (req, res) {
 app.get("/urls/:id", function (req, res) {
   let templateVars = {
     email: req.session["email"],
-    shortURL: req.params.id,
-    longURL: databaseURLs[req.params.id]
+    urls: databaseURLs,
+    paraId: databaseURLs[req.params.id]
+    // shortURL: req.params.id,
+    // longURL: databaseURLs[req.params.id]
   };
-  // console.log("id:", templateVars)
+
+  console.log("id:", templateVars)
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", function (req, res) {
-  databaseURLs[req.params.id] = req.body.newURL;
+  databaseURLs[req.params.id].longURL = req.body.longURL;
   // console.log("new url:", databaseURLs[req.params.id]);
   // console.log("req body url:", req.body.newURL);
   res.redirect('/urls');
@@ -139,7 +152,7 @@ app.post("/register", function (req, res) {
 
    Object.keys(users).forEach((userId) => {
      if (users[userId].email === req.body.email) {
-       console.log(users[userId].email);
+       // console.log(users[userId].email);
        unavailableEmail = users[userId].email;
      }
    });
@@ -165,13 +178,14 @@ app.post("/register", function (req, res) {
 
   // bcrypt.hash(enteredPassword, saltRounds, (err, hash) => {
     const newUser = {
+      user: randomUserId,
       email: enteredEmail,
       password: enteredPassword //hash
     };
     // console.log(hash);
-    console.log(newUser);
+    // console.log(newUser);
     users[randomUserId] = newUser;
-    console.log(users);
+    // console.log(users);
     // });
 
   res.redirect("/urls");
@@ -181,16 +195,16 @@ app.post("/login", function (req, res) {
   const emailInput = req.body.email;
   const passwordInput = req.body.password;
 
-  console.log("email in:", emailInput)
+  // console.log("email in:", emailInput)
 
-  console.log("pass in:", passwordInput);
+  // console.log("pass in:", passwordInput);
 
   var emailMatch;
   var passwordMatch;
 
   Object.keys(users).forEach((userId) => {
-      console.log("users:", users[userId].email);
-      console.log("usersdb pass:",users[userId].password);
+      // console.log("users:", users[userId].email);
+      // console.log("usersdb pass:",users[userId].password);
 
      if (users[userId].email === emailInput) {
        emailMatch = users[userId].email;
@@ -222,7 +236,7 @@ app.post("/login", function (req, res) {
 
 app.post("/logout", function (req, res) {
   req.session.email = undefined;
-  res.redirect("urls_index");
+  res.redirect("/urls");
 });
 
 /////////////////

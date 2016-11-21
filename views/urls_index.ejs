@@ -6,23 +6,19 @@
 
 </head>
   <body>
-      <% if (email) { %>
-    <form action="/urls/new" method="GET">
-      <input type="submit" value="Create">
-    </form>
-    <% } %>
-  </div>
+
     <ul>
-       <% Object.keys(urls).forEach(function(key) { %>
-        <li><a href="<%= urls[key] %>"><%= key %></a> --->
-        <%= urls[key] %>
-        <a href="/urls/<%= key %>">Edit</a>
+       <% Object.keys(urls).forEach(function(key) {%>
+       <% if (urls[key].user === email) {%>
+        <li><a href="<%= urls[key].longURL %>"><%= key %></a> --->
+        <%= urls[key].longURL %>
+        <a href="/urls/<%= urls[key] %>">Edit</a>
 
         <form method="POST" action="/urls/<%= key %>/delete">
         <input type="Submit" name="Delete" value="Delete"></form>
 
          <br></br></li>
-      <% }); %>
+      <% }}); %>
     </ul>
     <a href ="http://localhost:8080/urls/new">Click here to shorten your links</a>
 
