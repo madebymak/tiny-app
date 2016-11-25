@@ -5,14 +5,17 @@
   <% include ../views/partials/_header %>
 </head>
   <body>
-    <h2>ShortURL: <%= shortURL %> </h2>
-    <p> <%= longURL %>
-    <form action="/urls/<%= shortURL %>" method="POST" style="">
+  <% console.log("urls:", urls) %>
+    <% if (urls[paramId].user === email) { %>
+    <h2><%= paramId %> - <%= urls[paramId].longURL %></h2>
+    <form action="/urls/<%= paramId %>" method="POST" style="">
       <label for="newURL">Update URL:</label>
       <input id="newURL" type="text" name="newURL" placeholder="http://" style="width: 300px">
       <input type="submit" value="Update">
-    </form>
-
-    <a href="http://localhost:8080/urls/">Return to list</a>
+      </form>
+    <% }  else { %>
+       <a href="http://localhost:8080/urls/">Return to list</a>
+    <% } %>
   </body>
 </html>
+

@@ -12,7 +12,8 @@
        <% if (urls[key].user === email) {%>
         <li><a href="<%= urls[key].longURL %>"><%= key %></a> --->
         <%= urls[key].longURL %>
-        <a href="/urls/<%= urls[key] %>">Edit</a>
+        <% console.log("urls key", key) %>
+        <a href="/urls/<%= key %>">Edit</a>
 
         <form method="POST" action="/urls/<%= key %>/delete">
         <input type="Submit" name="Delete" value="Delete"></form>
@@ -21,6 +22,7 @@
       <% }}); %>
     </ul>
     <a href ="http://localhost:8080/urls/new">Click here to shorten your links</a>
-
   </body>
 </html>
+
+//problem is on this page i think

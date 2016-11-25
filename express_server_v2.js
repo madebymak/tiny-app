@@ -32,8 +32,6 @@ const users = {
 
 ////////////////
 
-app.set('view engine', 'ejs');
-
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -53,7 +51,13 @@ app.use(cookieSession({
 //   next();
 // });
 
+app.use((req, res, next) => {
+   res.locals.email = users[req.session.userSessId] ? req.session.email : null;
+   res.locals.urls = databaseURLs;
+   next();
+ });
 
+app.set('view engine', 'ejs');
 
 //Functions///////
 
@@ -72,11 +76,12 @@ function generateRandomString() {
 
 //Routes//////////
 app.get("/", function (req, res) {
-  let templateVars = {
-    email: req.session.email,
-    urls: databaseURLs
-  };
-  res.render("urls_index", templateVars);
+  // let templateVars = {
+  //   email: req.session.email,
+  //   urls: databaseURLs
+  // };
+  // res.render("urls_index", templateVars);
+  res.render("urls_index");
   // res.send("test");
   // console.log('Cookies: ', req.cookies)
   // res.redirect("/urls")
@@ -84,50 +89,55 @@ app.get("/", function (req, res) {
 
 app.get("/urls", function (req, res) {
   // let email = req.session.email;
-  let templateVars = {
-    email: req.session["email"],
-    urls: databaseURLs
-  };
+  // let templateVars = {
+  //   email: req.session["email"],
+  //   urls: databaseURLs
+  // };
     // console.log("temp:",templateVars);
-  res.render("urls_index", templateVars)
+  // res.render("urls_index", templateVars)
+  res.render("urls_index")
 });
 
 app.post("/urls", function (req, res) {
   var email = req.session.email;
   // console.log("email:", email);
   var shortURL = generateRandomString();
+  var newLongURL = req.body.longURL
   // var longURL = req.body.longURL;
   databaseURLs[shortURL] = {
     user: email,
-    longURL: req.body.longURL
+    longURL: newLongURL
   };
   console.log("data", databaseURLs);
   res.redirect("/urls");
 });
 
 app.get("/urls/new", function (req, res) {
-  let templateVars = {
-    email: req.session["email"]
-  };
-  res.render("urls_new", templateVars);
-  // res.render("urls_new");
+  // let templateVars = {
+  //   email: req.session["email"]
+  // };
+  // res.render("urls_new", templateVars);
+  res.render("urls_new");
 });
 
 app.get("/urls/:id", function (req, res) {
+   console.log("req body:",req.params.id);
   let templateVars = {
     email: req.session["email"],
     urls: databaseURLs,
-    paraId: databaseURLs[req.params.id]
+    paramId: req.params.id,
     // shortURL: req.params.id,
     // longURL: databaseURLs[req.params.id]
   };
-
-  console.log("id:", templateVars)
+  // console.log(templateVars)
+  // console.log("id:", templateVars)
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", function (req, res) {
-  databaseURLs[req.params.id].longURL = req.body.longURL;
+  let newLongURL = req.body.newURL;
+   // databaseURLs[req.params.id].longURL = newLongURL;
+  databaseURLs[req.params.id].longURL = newLongURL;
   // console.log("new url:", databaseURLs[req.params.id]);
   // console.log("req body url:", req.body.newURL);
   res.redirect('/urls');
@@ -201,6 +211,7 @@ app.post("/login", function (req, res) {
 
   var emailMatch;
   var passwordMatch;
+  var userUniq;
 
   Object.keys(users).forEach((userId) => {
       // console.log("users:", users[userId].email);
@@ -209,6 +220,7 @@ app.post("/login", function (req, res) {
      if (users[userId].email === emailInput) {
        emailMatch = users[userId].email;
        passwordMatch = users[userId].password;
+       userUniq = userId;
 
      }
    });
@@ -219,7 +231,9 @@ app.post("/login", function (req, res) {
      // bcrypt.compare(passwordInput, passwordMatch, (err, pass) => {
   if (passwordInput === passwordMatch) {
       console.log("password matches, good to go");
-      req.session.email = req.body.email;
+      // req.session.email = req.body.email;
+      req.session.userSessId = userUniq;
+      req.session.email = req.body.email
       res.redirect("/urls");
       return;
     } else {
@@ -236,6 +250,7 @@ app.post("/login", function (req, res) {
 
 app.post("/logout", function (req, res) {
   req.session.email = undefined;
+  req.session.userSessId = undefined;
   res.redirect("/urls");
 });
 
