@@ -3,7 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 8080
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
-// const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 
 const saltRounds = 10;
@@ -25,8 +25,8 @@ const databaseURLs = {
 
 const users = {
   "jacky": {
-    email: "test@test.com",
-    password: "test1234",
+    email: 'test@test.com',
+    password: '$2a$10$HoTVuJEWsGWq8hw6NYNZQ.V8Tf6pDTc9VaR4vY/kykBeu9lPb2JPK'
   }
 };
 
@@ -123,7 +123,7 @@ app.get("/urls/new", function (req, res) {
 app.get("/urls/:id", function (req, res) {
    console.log("req body:",req.params.id);
   let templateVars = {
-    email: req.session["email"],
+    email: req.session.email,
     urls: databaseURLs,
     paramId: req.params.id,
     // shortURL: req.params.id,
@@ -184,20 +184,22 @@ app.post("/register", function (req, res) {
    let enteredPassword = req.body.password;
 
   let randomUserId = generateRandomString();
-  // console.log(users);
+  console.log(users);
 
-  // bcrypt.hash(enteredPassword, saltRounds, (err, hash) => {
+  bcrypt.hash(enteredPassword, saltRounds, (err, hash) => {
     const newUser = {
       user: randomUserId,
       email: enteredEmail,
-      password: enteredPassword //hash
+      password: hash
+      // password: enteredPassword
     };
-    // console.log(hash);
+    console.log("hash:",hash);
+    console.log("newuser:",newUser);
     // console.log(newUser);
     users[randomUserId] = newUser;
-    // console.log(users);
-    // });
-
+    console.log("newUser db:", users);
+    });
+  console.log("users db:", users);
   res.redirect("/urls");
 });
 
@@ -227,13 +229,14 @@ app.post("/login", function (req, res) {
 
    if (emailInput === emailMatch) {
      console.log("email found in the db");
-   }
-     // bcrypt.compare(passwordInput, passwordMatch, (err, pass) => {
-  if (passwordInput === passwordMatch) {
+     console.log("email:", emailMatch);
+    console.log("pass input:" ,passwordInput);
+    console.log("pass:", passwordMatch);
+   bcrypt.compare(passwordInput, passwordMatch, (err, passwordFound) => {
+     if (passwordFound) {
       console.log("password matches, good to go");
-      // req.session.email = req.body.email;
       req.session.userSessId = userUniq;
-      req.session.email = req.body.email
+      req.session.email = req.body.email;
       res.redirect("/urls");
       return;
     } else {
@@ -242,11 +245,13 @@ app.post("/login", function (req, res) {
        res.status(403).send("Invalid email or password");
        return;
      }
-   // });
+   })
+ } else {
      console.log("email not found");
      res.status(403).send("Invalid email or password");
      return;
-})
+   }
+});
 
 app.post("/logout", function (req, res) {
   req.session.email = undefined;
@@ -256,5 +261,4 @@ app.post("/logout", function (req, res) {
 
 /////////////////
 
-app.listen(8080)
-
+app.listen(8080);

@@ -7,17 +7,20 @@
   My Tiny App
 </header>
 <body>
- <% if(!email) { %>
- <form action="/login" method="GET" style="">
-    <input type="submit" value="Sign in">
+<div>
+<% if(!email) { %>
+  <form action="/login" method="GET" style="">
+    <input type="submit" value="login">
   </form>
-    <form action="/register" method="GET">
-      <input type="submit" value="Register">
-    </form>
+  <form action="/register" method="GET">
+    <input type="submit" value="Register">
+  </form>
 
 <% } else { %>
     Hey <%= email %>! <form method="POST" action="/logout">
-        <input type="Submit" name="logOut" value="Log out" name="email"></form>
+    <input type="Submit" name="logOut" value="Log out" name="email"></form>
  <% } %>
+</div>
+
 </body>
 </html>
