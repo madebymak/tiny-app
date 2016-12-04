@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  </head>
-  <body style="font-size:20px; padding:50px;">
     <% include partials/_header %>
+  </head>
+  <body>
+    <% if(!email) { %>
+      <h1>Please login or register before using.</h1>
+    <% } else { %>
     <p><form action="/urls" method="POST" style="">
       <label for="longURL">Enter a URL:</label>
       <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
       <input type="submit" value="Submit"></form></p>
     </form>
+    <% } %>
   </body>
 </html>

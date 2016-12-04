@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title> </title>
 </head>
 <header>
-  My Tiny App
+  <h2>My Tiny App by Jacky</h2>
 </header>
-<body>
-<div>
-<% if(!email) { %>
-  <form action="/login" method="GET" style="">
-    <input type="submit" value="login">
-  </form>
-  <form action="/register" method="GET">
-    <input type="submit" value="Register">
-  </form>
+  <body>
+    <div>
+      <% if(!email) { %>
+        <b>Please login or register before using.</b>
+        <form action="/login" method="GET" style="">
+          <input type="submit" value="login">
+        </form>
+        <form action="/register" method="GET">
+          <input type="submit" value="Register">
+        </form>
 
-<% } else { %>
-    Hey <%= email %>! <form method="POST" action="/logout">
-    <input type="Submit" name="logOut" value="Log out" name="email"></form>
- <% } %>
-</div>
-
-</body>
+        <% } else { %>
+          Welcome <b><%= email %>!</b> </br>
+          <a href="/urls">My links</a>
+          <form method="POST" action="/logout">
+            <input type="Submit" name="logOut" value="Log out" name="email"></form>
+          <% } %>
+    </div>
+  </body>
 </html>

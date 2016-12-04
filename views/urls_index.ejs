@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>TinyApp</title>
   <% include ../views/partials/_header %>
-
 </head>
-  <body>
 
-    <ul>
-       <% Object.keys(urls).forEach(function(key) {%>
-       <% if (urls[key].user === email) {%>
-        <li><a href="<%= urls[key].longURL %>"><%= key %></a> --->
-        <%= urls[key].longURL %>
-        <% console.log("urls key", key) %>
+<body>
 
-        <a href="/urls/<%= key %>">Edit</a>
+  <ul>
+    <% Object.keys(urls).forEach(function(key) {%>
+      <% if (urls[key].user === email) {%>
+        <li>
+          <a href="<%= urls[key].longURL %>">
+            <%= key %>
+          </a> --->
+          <%= urls[key].longURL %>
+            <% console.log("urls key", key) %>
 
-        <form method="POST" action="/urls/<%= key %>/delete">
-        <input type="Submit" name="Delete" value="Delete"></form>
+              <a href="/urls/<%= key %>">Edit</a>
 
-         <br></br></li>
-      <% }}); %>
-    </ul>
-    <a href ="http://localhost:8080/urls/new">Click here to shorten your links</a>
-  </body>
+              <form method="POST" action="/urls/<%= key %>/delete">
+                <input type="Submit" name="Delete" value="Delete"></form>
+
+              <br></br>
+        </li>
+        <% }}); %>
+  </ul>
+  <a href="/urls/new">Click here to shorten your links</a>
+</body>
+
 </html>
-
-//problem is on this page i think

@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>TinyApp</title>
   <% include ../views/partials/_header %>
 </head>
   <body>
-  <% console.log("urls:", urls) %>
-    <% if (urls[paramId].user === email) { %>
-    <h2><%= paramId %> - <%= urls[paramId].longURL %></h2>
-    <form action="/urls/<%= paramId %>" method="POST" style="">
-      <label for="newURL">Update URL:</label>
-      <input id="newURL" type="text" name="newURL" placeholder="http://" style="width: 300px">
-      <input type="submit" value="Update">
+    <% if(!email) { %>
+      <b>Please login or register before using.</b>
+    <% } else if (urls[paramId].user === email) { %>
+      <h2><%= paramId %> - <%= urls[paramId].longURL %></h2>
+      <form action="/urls/<%= paramId %>" method="POST" style="">
+        <label for="newURL">Update URL:</label>
+        <input id="newURL" type="text" name="newURL" placeholder="http://" style="width: 300px">
+        <input type="submit" value="Update">
       </form>
-    <% }  else { %>
-       <a href="http://localhost:8080/urls/">Return to list</a>
-    <% } %>
+    <% }%> </br>
+      <a href="/urls">Return to list</a>
   </body>
-</html>
 
+</html>
