@@ -125,7 +125,7 @@ app.post("/register", function(req, res) {
   });
 
   if (!req.body.email || !req.body.password) {
-    res.redirect("/error/400_error");
+    res.render("error/400_error");
     return;
   }
 
@@ -140,7 +140,6 @@ app.post("/register", function(req, res) {
   let enteredPassword = req.body.password;
 
   let randomUserId = generateRandomString();
-  console.log(users);
 
   bcrypt.hash(enteredPassword, saltRounds, (err, hash) => {
     const newUser = {
@@ -175,7 +174,6 @@ app.get("/urls/new", function(req, res) {
 });
 
 app.get("/urls/:id", function(req, res) {
-  console.log("req body:", req.params.id);
   if (!req.params.id) {
     res.render("error/404_error");
   }
