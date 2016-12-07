@@ -174,8 +174,10 @@ app.get("/urls/new", function(req, res) {
 });
 
 app.get("/urls/:id", function(req, res) {
-  if (!req.params.id) {
+  if (!databaseURLs[req.params.id]) {
     res.render("error/404_error");
+  } else if (req.session.email !== databaseURLs[req.params.id].user) {
+    res.render("error/403_error");
   }
   let templateVars = {
     email: req.session.email,
@@ -192,12 +194,18 @@ app.post("/urls/:id", function(req, res) {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  if (req.session.email !== databaseURLs[req.params.id].user) {
+    res.render("error/403_error");
+  }
   delete databaseURLs[req.params.id];
   res.redirect('/urls');
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = databaseURLs[req.params.shortURL];
+app.get("/u/:id", (req, res) => {
+  if (!databaseURLs[req.params.id]) {
+    res.render("error/404_error");
+  }
+  let longURL = databaseURLs[req.params.id].longURL;
   res.redirect(longURL);
 });
 
