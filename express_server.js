@@ -104,6 +104,7 @@ app.post("/login", function(req, res) {
       }
     });
   } else {
+    res.status(403);
     res.render("error/403_error");
     return;
   }
@@ -125,12 +126,14 @@ app.post("/register", function(req, res) {
   });
 
   if (!req.body.email || !req.body.password) {
+    res.status(400);
     res.render("error/400_error");
     return;
   }
 
   for (var userId in users) {
     if (unavailableEmail === req.body.email) {
+      res.status(400);
       res.render("error/400_error");
       return;
     }
@@ -175,8 +178,10 @@ app.get("/urls/new", function(req, res) {
 
 app.get("/urls/:id", function(req, res) {
   if (!databaseURLs[req.params.id]) {
+    res.status(404);
     res.render("error/404_error");
   } else if (req.session.email !== databaseURLs[req.params.id].user) {
+    res.status(403);
     res.render("error/403_error");
   }
   let templateVars = {
@@ -195,6 +200,7 @@ app.post("/urls/:id", function(req, res) {
 
 app.post("/urls/:id/delete", (req, res) => {
   if (req.session.email !== databaseURLs[req.params.id].user) {
+    res.status(403);
     res.render("error/403_error");
   }
   delete databaseURLs[req.params.id];
@@ -203,6 +209,7 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   if (!databaseURLs[req.params.id]) {
+    res.status(404);
     res.render("error/404_error");
   }
   let longURL = databaseURLs[req.params.id].longURL;
